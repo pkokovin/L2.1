@@ -2,6 +2,8 @@ package accounts;
 
 import dbService.DBException;
 import dbService.DBService;
+import dbService.DBServiceImpl;
+import dbService.dataSets.UsersDataSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,7 @@ import java.util.Map;
 public class AccountService {
     private final Map<String, UserProfile> loginToProfile;
     private final Map<String, UserProfile> sessionIdToProfile;
-    private DBService dbService = new DBService();
+    private DBService dbService = new DBServiceImpl();
 
     public AccountService() {
         loginToProfile = new HashMap<>();
@@ -25,11 +27,8 @@ public class AccountService {
 
     public void addNewUser(UserProfile userProfile) throws DBException {
         String loginCurrent = null;
-        try {
-            loginCurrent = dbService.getUserByLogin(userProfile.getLogin()).getLogin();
-        } catch (NullPointerException e) {
-
-        }
+        UsersDataSet tmpUserDataset = dbService.getUserByLogin(userProfile.getLogin());
+        if (tmpUserDataset != null) loginCurrent = tmpUserDataset.getLogin();
         if (loginCurrent == null || !userProfile.getLogin().equals(loginCurrent)) {
             dbService.addUser(userProfile.getLogin(), userProfile.getPass());
         }
@@ -39,10 +38,9 @@ public class AccountService {
 //    }
     public UserProfile getUserByLogin(String login) throws DBException {
         UserProfile userProfile = null;
-        try {
+        UsersDataSet tmpUserDataset = dbService.getUserByLogin(login);
+        if (tmpUserDataset != null) {
             userProfile = new UserProfile(dbService.getUserByLogin(login).getLogin(), dbService.getUserByLogin(login).getPassword());
-        } catch (NullPointerException e) {
-
         }
         return userProfile;
     }

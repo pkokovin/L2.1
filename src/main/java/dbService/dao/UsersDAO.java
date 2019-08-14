@@ -18,13 +18,23 @@ public class UsersDAO {
     }
 
     public long getUserId(String login) throws HibernateException {
+        long result = 0;
         Criteria criteria = session.createCriteria(UsersDataSet.class);
-        return ((UsersDataSet) criteria.add(Restrictions.eq("login", login)).uniqueResult()).getId();
+        UsersDataSet tmpUsersDataSet = ((UsersDataSet) criteria.add(Restrictions.eq("login", login)).uniqueResult());
+        if (tmpUsersDataSet != null) {
+            result = tmpUsersDataSet.getId();
+        }
+        return result;
     }
 
     public String getUserPassword(String login) throws HibernateException {
+        String result = null;
         Criteria criteria = session.createCriteria(UsersDataSet.class);
-        return ((UsersDataSet) criteria.add(Restrictions.eq("login", login)).uniqueResult()).getPassword();
+        UsersDataSet tmpUserDataSet = ((UsersDataSet) criteria.add(Restrictions.eq("login", login)).uniqueResult());
+        if (tmpUserDataSet != null) {
+            result = tmpUserDataSet.getPassword();
+        }
+        return result;
     }
 
     public long insertUser(String login, String password) throws HibernateException {
